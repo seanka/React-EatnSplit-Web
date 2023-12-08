@@ -3,27 +3,33 @@ import { initialFriends } from "./static";
 
 export default function App() {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [friendsList, setFriendsList] = useState(initialFriends);
 
   function handleShowAddFrom() {
     setShowAddForm((show) => !show);
   }
 
+  function handleAddFriend(newF) {
+    setFriendsList((f) => [...f, newF]);
+    handleShowAddFrom();
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendsList />
-        {showAddForm && <AddFriedForm />}
-        <Button handleOnClick={handleShowAddFrom}>{showAddForm ? "Close" : "Add Friend"}</Button>
+        <FriendsList friends={friendsList} />
+        {showAddForm && <AddFriedForm onAddFriend={handleAddFriend} />}
+        <Button onButtonClick={handleShowAddFrom}>{showAddForm ? "Close" : "Add Friend"}</Button>
       </div>
       <SplitBillForm />
     </div>
   );
 }
 
-function FriendsList() {
+function FriendsList({ friends }) {
   return (
     <ul>
-      {initialFriends.map((friend) => (
+      {friends.map((friend) => (
         <FriendCard friend={friend} key={friend.id} />
       ))}
     </ul>
@@ -53,22 +59,39 @@ function FriendCard({ friend }) {
   );
 }
 
-function Button({ children, handleOnClick }) {
+function Button({ children, onButtonClick }) {
   return (
-    <button className="button" onClick={handleOnClick}>
+    <button className="button" onClick={onButtonClick}>
       {children}
     </button>
   );
 }
 
-function AddFriedForm() {
+function AddFriedForm({ onAddFriend }) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("https://i.pravatar.cc/48");
+
+  function handleOnSubmit(e) {
+    e.preventDefault();
+
+    if (!name || !image) return;
+
+    const id = crypto.randomUUID();
+    const newFriend = { name, image: `${image}?=${id}`, balance: 0, id };
+
+    onAddFriend(newFriend);
+
+    setName("");
+    setImage("https://i.pravatar.cc/48");
+  }
+
   return (
-    <form className="form-add-friend">
+    <form className="form-add-friend" onSubmit={handleOnSubmit}>
       <label>Friend Name</label>
-      <input type="text" />
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
 
       <label>Image Url</label>
-      <input type="text" />
+      <input type="text" value={image} onChange={(e) => setImage(e.target.value)} />
 
       <Button>Add</Button>
     </form>
