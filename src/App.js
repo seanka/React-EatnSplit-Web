@@ -2,9 +2,9 @@ import { useState } from "react";
 import { initialFriends } from "./static";
 
 export default function App() {
+  const [selectedF, setSelectedF] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [friendsList, setFriendsList] = useState(initialFriends);
-  const [selectedF, setSelectedF] = useState(null);
 
   function handleShowAddFrom() {
     setShowAddForm((show) => !show);
@@ -107,21 +107,25 @@ function AddFriedForm({ onAddFriend }) {
 }
 
 function SplitBillForm({ selectedF }) {
+  const [bill, setBill] = useState("");
+  const [userPaid, setUserPaid] = useState("");
+  const [paying, setPaying] = useState("user");
+
   return (
     <form className="form-split-bill">
       <h2>Split a bill with {selectedF.name} </h2>
 
       <label> {selectedF.name} Bill Value</label>
-      <input type="text" />
+      <input type="text" value={bill} onChange={(e) => setBill(Number(e.target.value))} />
 
       <label>Your Expenses</label>
-      <input type="text" />
+      <input type="text" value={userPaid} onChange={(e) => setUserPaid(Number(e.target.value) > bill ? userPaid : Number(e.target.value))} />
 
       <label> {selectedF.name}'s expense</label>
-      <input type="text" disabled />
+      <input type="text" disabled value={bill - userPaid} />
 
       <label> Who is paying the bill</label>
-      <select>
+      <select value={paying} onChange={(e) => setPaying(e.target.value)}>
         <option value="user">You</option>
         <option value="friend"></option>
       </select>
