@@ -1,12 +1,19 @@
+import { useState } from "react";
 import { initialFriends } from "./static";
 
 export default function App() {
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  function handleShowAddFrom() {
+    setShowAddForm((show) => !show);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
         <FriendsList />
-        <AddFriedForm />
-        <Button>Add Friend</Button>
+        {showAddForm && <AddFriedForm />}
+        <Button handleOnClick={handleShowAddFrom}>{showAddForm ? "Close" : "Add Friend"}</Button>
       </div>
       <SplitBillForm />
     </div>
@@ -46,8 +53,12 @@ function FriendCard({ friend }) {
   );
 }
 
-function Button({ children }) {
-  return <button className="button">{children}</button>;
+function Button({ children, handleOnClick }) {
+  return (
+    <button className="button" onClick={handleOnClick}>
+      {children}
+    </button>
+  );
 }
 
 function AddFriedForm() {
